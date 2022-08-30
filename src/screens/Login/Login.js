@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, KeyboardAvoidingView } from "react-native";
 import { useForm } from "react-hook-form";
 import CustomButton from "../../components/common/CustomButton";
 import CustomInput from "../../components/common/CustomInput";
@@ -8,6 +8,8 @@ import assets from '../../utils/assets';
 import DatePicker from 'react-native-date-picker'
 import { colors } from "../../utils/colors";
 import CONSTANTS from "../../constants/constants";
+import { useDispatch } from 'react-redux'
+import { saveUser } from "../../store/actions/userAction";
 
 export default function Login(props) {
     const { control, handleSubmit, formState: { errors } } = useForm({
@@ -17,9 +19,12 @@ export default function Login(props) {
             phone: '',
         }
     });
+
+    const dispatch = useDispatch();
+
     const onSubmit = data => {
         console.log(data)
-        props.passToHome(true)
+        dispatch(saveUser(data))
     };
 
     const [date, setDate] = useState(new Date())
@@ -27,7 +32,7 @@ export default function Login(props) {
     const [defaultDateInput, setDefaultDateInput] = useState("Date of birth")
 
     return (
-        <View style={styles.container}>
+        <KeyboardAvoidingView behavior={'padding'} style={styles.container}>
 
             <CustomImage
                 source={assets.LOGO}
@@ -103,7 +108,7 @@ export default function Login(props) {
             <CustomButton style={styles.date} buttonTextStyle={styles.buttonTextStyle} buttonText={defaultDateInput || date.toISOString().split('T')[0]} onPress={() => setOpenDateModal(true)} />
 
             <CustomButton buttonText="Submit" disabled={defaultDateInput} style={{ width: 100 }} onPress={handleSubmit(onSubmit)} />
-        </View>
+        </KeyboardAvoidingView>
     );
 }
 

@@ -5,6 +5,7 @@ const CONSTANTS = {
     },
     SCREENS: {
         HOME: 'Home',
+        MORE_TAB: 'More_TAB',
         MORE: 'More',
         DETAILS: 'Details',
     }

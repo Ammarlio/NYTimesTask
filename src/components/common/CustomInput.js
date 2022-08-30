@@ -35,7 +35,6 @@ export default CustomInput;
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
         width: Dimensions.get('window').width * 0.8,
         maxHeight: 50,
         marginVertical: 12
@@ -47,7 +46,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         backgroundColor: colors.WHITE,
         paddingHorizontal: 12,
-        height: '100%',
+        height: 50,
         color: colors.BLACK
     },
     text: {
