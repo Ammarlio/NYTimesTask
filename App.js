@@ -14,6 +14,9 @@ import Login from './src/screens/Login';
 import { NavigationContainer } from '@react-navigation/native'
 import Home from './src/containers';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { Provider, useSelector } from 'react-redux';
+import store from './src/store';
+import CONSTANTS from './src/constants/constants';
 
 const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
@@ -22,20 +25,11 @@ const App = () => {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
+  const { userData } = useSelector(state => state.userReducer);
   const [auth, setAuth] = useState(false)
-  const [openHome, setOpenHome] = useState(false)
+  const [screen, setScreen] = useState(CONSTANTS.SCREENS.HOME)
 
   useEffect(() => {
-
-    // Check if authenticated
-
-    //fetch redux user state if there is data
-    if (auth) {
-      setOpenHome(true)
-    } else {
-      setOpenHome(false)
-    }
-
     // RNRestart.Restart()
     // I18nManager.allowRTL(true)
     // I18nManager.forceRTL(true)
@@ -44,14 +38,17 @@ const App = () => {
 
 
   useEffect(() => {
+    if (userData.email) {
+      setScreen(CONSTANTS.SCREENS.HOME)
+    }
+  }, [userData])
 
-  }, [openHome])
-
-
-  const passToHome = (pass) => {
-    if (pass) {
-      console.log(pass)
-      setOpenHome(true)
+  const renderScreen = () => {
+    switch (screen) {
+      case CONSTANTS.SCREENS.HOME:
+        return <Home />
+      default:
+        return <Login />
     }
   }
 
@@ -59,10 +56,19 @@ const App = () => {
     <NavigationContainer>
       <SafeAreaProvider style={backgroundStyle}>
         <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-        {openHome ? <Home /> : <Login passToHome={passToHome} />}
+        {renderScreen()}
       </SafeAreaProvider>
     </NavigationContainer>
   );
 };
 
-export default App;
+const AppWrapper = () => {
+  return (
+    <Provider store={store}>
+      <App />
+    </Provider>
+  )
+}
+
+
+export default AppWrapper;
