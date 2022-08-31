@@ -6,6 +6,7 @@ import News from '../screens/News';
 import { colors } from '../utils/colors';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import More from '../screens/More';
+import Details from '../screens/Details';
 
 const RootStack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -16,7 +17,7 @@ const NewsStackScreen = () => {
     return (
         <NewsStack.Navigator screenOptions={{ headerBackTitleVisible: false }}>
             <NewsStack.Screen
-                name={CONSTANTS.SCREENS.DETAILS}
+                name={CONSTANTS.SCREENS.NEWS}
                 component={News}
                 options={{
                     headerShown: false,
@@ -62,12 +63,13 @@ const TabbarStackScreen = () => {
                 component={NewsStackScreen}
                 options={{
                     headerTitle: 'News',
-                    headerStyle: {
-                        backgroundColor: colors.PRIMARY,
-                    },
                     headerTitleStyle: {
-                        fontFamily: 'TimesNewRomanPSMT',
+                        color: colors.PRIMARY,
+                        fontWeight: 'bold',
                         fontSize: 24
+                    },
+                    headerStyle: {
+                        backgroundColor: colors.WHITE,
                     },
                     tabBarHideOnKeyboard: true,
                     tabBarLabel: "News",
@@ -89,12 +91,13 @@ const TabbarStackScreen = () => {
                 component={MoreStackScreen}
                 options={{
                     headerTitle: 'More',
+                    headerTitleStyle: {
+                        color: colors.PRIMARY,
+                        fontWeight: 'bold',
+                        fontSize: 24
+                    },
                     headerStyle: {
                         backgroundColor: colors.WHITE,
-                    },
-                    headerTitleStyle: {
-                        fontFamily: 'TimesNewRomanPSMT',
-                        fontSize: 24
                     },
                     tabBarHideOnKeyboard: true,
                     tabBarLabel: "More",
@@ -126,6 +129,20 @@ const Home = () => {
                     headerShown: false,
                 }}
             />
+            <RootStack.Screen
+                name={CONSTANTS.SCREENS.DETAILS}
+                component={Details}
+                options={{
+                    headerShown: true,
+                    headerTitleStyle: {
+                        color: colors.PRIMARY,
+                        fontWeight: 'bold',
+                    },
+                    headerStyle: {
+                        backgroundColor: colors.WHITE,
+                    },
+                }}
+            />
         </RootStack.Navigator>
     )
 }
@@ -140,6 +157,7 @@ const styles = StyleSheet.create({
     },
     normal: {
         fontSize: 24,
+        color: colors.GRAY,
     },
     tabBarStyle: {
         backgroundColor: colors.WHITE,

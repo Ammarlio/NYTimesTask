@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, StyleSheet, KeyboardAvoidingView } from "react-native";
+import { View, StyleSheet, KeyboardAvoidingView, TouchableOpacity, Text, I18nManager } from "react-native";
 import { useForm } from "react-hook-form";
 import CustomButton from "../../components/common/CustomButton";
 import CustomInput from "../../components/common/CustomInput";
@@ -8,31 +8,53 @@ import assets from '../../utils/assets';
 import DatePicker from 'react-native-date-picker'
 import { colors } from "../../utils/colors";
 import CONSTANTS from "../../constants/constants";
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { saveUser } from "../../store/actions/userAction";
+import PhoneInput from "react-native-phone-number-input";
+import { changeLanguage } from "../../store/actions/settingsAction";
+import RNRestart from 'react-native-restart';
 
 export default function Login(props) {
     const { control, handleSubmit, formState: { errors } } = useForm({
         defaultValues: {
             username: '',
             email: '',
-            phone: '',
         }
     });
 
     const dispatch = useDispatch();
-
-    const onSubmit = data => {
-        console.log(data)
-        dispatch(saveUser(data))
-    };
-
+    const { language } = useSelector(state => state.settingsReducer)
     const [date, setDate] = useState(new Date())
     const [openDateModal, setOpenDateModal] = useState(false)
     const [defaultDateInput, setDefaultDateInput] = useState("Date of birth")
+    const [phoneNumber, setPhoneNumber] = useState("")
+
+    const onSubmit = data => {
+        let userData = {
+            ...data,
+            phoneNumber,
+            date: date?.toISOString().split('T')[0],
+            isLoggedIn: true
+        }
+        dispatch(saveUser(userData))
+    };
+
+    const onChangeLanguage = () => {
+        const isRTL = language == 'ar'
+        I18nManager.allowRTL(!isRTL)
+        I18nManager.forceRTL(!isRTL)
+        dispatch(changeLanguage())
+        clearTimeout(timeout)
+        let timeout = setTimeout(() => RNRestart.Restart(), 500)
+    }
 
     return (
         <KeyboardAvoidingView behavior={'padding'} style={styles.container}>
+            <TouchableOpacity onPress={onChangeLanguage}>
+                <Text>
+                    {language == 'en' ? 'عربي' : 'English'}
+                </Text>
+            </TouchableOpacity>
 
             <CustomImage
                 source={assets.LOGO}
@@ -70,24 +92,19 @@ export default function Login(props) {
                     }
                 }
             />
-            <CustomInput
-                name={"phone"}
-                placeholder={"phone"}
-                control={control}
-                keyboardType='number-pad'
-                rules={
-                    {
-                        required: 'Phone number is required',
-                        minLength: {
-                            value: 14,
-                            message: 'Phone number should be at least 14 characters'
-                        },
-                        pattern: {
-                            value: CONSTANTS.REG_EXP.PHONE_REG,
-                            message: 'Phone number is invalid'
-                        }
-                    }
-                }
+
+            <PhoneInput
+                containerStyle={styles.phoneViewStyle}
+                textContainerStyle={{ borderRadius: 8, paddingHorizontal: 12 }}
+                codeTextStyle={{ height: 20 }}
+                textInputStyle={{ color: colors.BLACK }}
+                defaultValue={phoneNumber}
+                defaultCode="JO"
+                layout="first"
+                onChangeText={(text) => {
+                    setPhoneNumber(text);
+                }}
+                withShadow
             />
 
             <DatePicker
@@ -107,7 +124,7 @@ export default function Login(props) {
 
             <CustomButton style={styles.date} buttonTextStyle={styles.buttonTextStyle} buttonText={defaultDateInput || date.toISOString().split('T')[0]} onPress={() => setOpenDateModal(true)} />
 
-            <CustomButton buttonText="Submit" disabled={defaultDateInput} style={{ width: 100 }} onPress={handleSubmit(onSubmit)} />
+            <CustomButton buttonText="Submit" disabled={defaultDateInput || !phoneNumber} style={{ width: 100 }} onPress={handleSubmit(onSubmit)} />
         </KeyboardAvoidingView>
     );
 }
@@ -133,5 +150,14 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: '400',
         color: colors.GRAY
-    }
+    },
+    phoneViewStyle: {
+        justifyContent: 'center',
+        marginTop: 18,
+        borderRadius: 8,
+        borderWidth: 1,
+        backgroundColor: colors.WHITE,
+        height: 50,
+        borderColor: colors.PRIMARY,
+    },
 })
