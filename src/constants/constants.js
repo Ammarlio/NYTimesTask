@@ -8,6 +8,7 @@ const CONSTANTS = {
         MORE_TAB: 'More_TAB',
         MORE: 'More',
         DETAILS: 'Details',
+        NEWS: 'NEWS',
     }
 }
 
